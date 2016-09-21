@@ -6,7 +6,10 @@
 	<!-- This ensures the canvas works on IE9+.  Don't remove it! -->
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	
-	<title>InfinitiveRace</title>
+	<!-- Standardised web app manifest -->
+	<link rel="manifest" href="appmanifest.json" />
+	
+	<title>infinity-track</title>
 	<!-- Note: running this exported project from disk may not work exactly like preview, since browsers block some features on the file:// protocol.  Once you've uploaded it to a server, it should work OK. -->
 	
     <!-- This outlines the canvas with a black border and makes the page background black. -->
@@ -14,6 +17,7 @@
 		body { background-color: black; color: white; }
 		canvas { -ms-touch-action: none; }
 	</style>
+
 
 </head> 
  
@@ -27,7 +31,7 @@
 		// Check for running exported on file protocol
 		if (window.location.protocol.substr(0, 4) === "file")
 		{
-			alert("Exported games won't work until you upload them.");
+			alert("Exported games won't work until you upload them. (When running on the file:/// protocol, browsers block many features from working for security reasons.)");
 		}
 	})();
 	</script>
@@ -58,10 +62,8 @@
 	
 	<!-- Pages load faster with scripts at the bottom -->
 	
-	<!-- Construct 2 exported games require jQuery.  To save bandwidth, by default
-	this is set to grab it off the Google content delivery network (CDN). Fall back to local if not available. -->
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-	<script>window.jQuery || document.write("<script src='jquery-1.7.1.min.js'>\x3C/script>")</script>
+	<!-- Construct 2 exported games require jQuery. -->
+	<script src="jquery-2.1.1.min.js"></script>
 
 
 	
@@ -70,29 +72,6 @@
 	<script src="c2runtime.js"></script>
 
     <script>
-		jQuery(window).resize(function() {
-			if (window.c2resizestretchmode === 1)
-			{
-				window.c2resizestretchmode = 2;		// put back when breaking back out of fullscreen
-				var canvas = document.getElementById("c2canvas");
-				window.c2oldcanvaswidth = canvas.width;
-				window.c2oldcanvasheight = canvas.height;
-				window.c2eventtime = Date.now();
-				var w = jQuery(window).width();
-				var h = jQuery(window).height();
-				cr_sizeCanvas(w, h);
-			}
-			else if (window.c2resizestretchmode === 2)
-			{
-				// Size event fires twice on FF + Chrome, ignore second trigger
-				if (Date.now() > window.c2eventtime + 50)
-				{
-					window.c2resizestretchmode = 0;
-					cr_sizeCanvas(window.c2oldcanvaswidth, window.c2oldcanvasheight);
-				}
-			}
-		});
-	
 		// Start the Construct 2 project running on window load.
 		jQuery(document).ready(function ()
 		{
@@ -112,6 +91,12 @@
 		document.addEventListener("mozvisibilitychange", onVisibilityChanged, false);
 		document.addEventListener("webkitvisibilitychange", onVisibilityChanged, false);
 		document.addEventListener("msvisibilitychange", onVisibilityChanged, false);
+		
+		if (navigator.serviceWorker && navigator.serviceWorker.register)
+		{
+			// Register an empty service worker to trigger web app install banners.
+			navigator.serviceWorker.register("sw.js", { scope: "./" });
+		}
     </script>
 </body> 
 </html> 
